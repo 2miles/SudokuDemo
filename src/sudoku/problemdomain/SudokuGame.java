@@ -1,7 +1,8 @@
 package sudoku.problemdomain;
 import sudoku.constants.GameState;
+import java.io.Serializable;
 
-public class SudokuGame implements serializable {
+public class SudokuGame implements Serializable {
     private final GameState gameState; //ENUM
     private final int[][] gridState;  //Actual 2d grid for game
     public static final int GRID_BOUNDARY = 9;
@@ -16,6 +17,6 @@ public class SudokuGame implements serializable {
     }
 
     public int[][] getCopyOfGridState() {
-        return SudokuUtilitios.copyToNewArray(gridState);
+        return SudokuUtilities.copyToNewArray(gridState);
     }
 }
