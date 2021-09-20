@@ -10,10 +10,13 @@ import java.io.IOException;
 
 
 public class SudokuApplication extends Application{
+
+    //reference to the user interface
     private IUserInterfaceContract.View uiImpl;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        //the actual user interface
         uiImpl = new UserInterfaceImpl(primaryStage);
         try {
             SudokuBuildLogic.build(uiImpl);
