@@ -1,10 +1,10 @@
 package sudoku.userinterface;
 import sudoku.problemdomain.SudokuGame;
 
-//using the parent interface sorta as a namespace
-//or a way of differentiationg differt interfaces
-//so, if we had multipe different user interface complttents
-// or featuers, this is how we would differentiate them.
+// Using the parent interface like a namespace, or a way of differentiating
+// different interfaces.
+// So, if we had multiple different user interface components, or features,
+// this is how we would differentiate them.
 public interface IUserInterfaceContract {
 
 

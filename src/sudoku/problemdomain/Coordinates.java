@@ -3,10 +3,10 @@ package sudoku.problemdomain;
 import java.util.Objects;
 
 public class Coordinates {
-    private final int x;
-    private final int y;
+    private final int x;  //final: cannot be changed.
+    private final int y;  //private: not accessible outside of package
 
-    //Constructor
+    //Constructor; initialize x,y
     public Coordinates(int x, int y) {
         this.x = x;
         this.y = y;
@@ -41,7 +41,7 @@ public class Coordinates {
 
 
     /**
-     * hashCode is a unique identifier that is generated form
+     * hashCode is a unique identifier that is generated from
      * some data you give it
      */
     @Override

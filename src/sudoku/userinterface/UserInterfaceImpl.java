@@ -1,17 +1,31 @@
 package sudoku.userinterface;
+
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.Group;
+import javafx.event.EventHandler;
+import javafx.stage.Stage;
+
+import sudoku.constants.GameState;
 import sudoku.problemdomain.SudokuGame;
 import sudoku.problemdomain.Coordinates;
 
-import javafx.scene.Group;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import java.util.HashMap;
+
+
+//NOTE
+//use static final constatants instead of hard coded values whenever
+//possible. This helps with legibility and performance?
 
 // EventHandler and KeyEvent come from javafx and
 // that is how we listen for input form the keyboard
@@ -38,11 +52,11 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
     // and use that hash function to retrieve and store them
     private HashMap<Coordinates, SudokuTextField> textFieldCoordinates;
 
-    //This EventLister is going to be like the 'controller' or the 'presenter'.
-    //This is what we will pass events which the user causes.
-    //The listener, which is basically a control logic class,
-    //will basically interpret those events and pass messages between
-    //the view, the frontend , the UI , and the backend.
+    // This EventLister is going to be like the 'controller' or the 'presenter'.
+    // This is what we will pass events which the user causes.
+    // The listener, which is basically a control logic class,
+    // will basically interpret those events and pass messages between
+    // the view, the frontend , the UI , and the backend.
     private IUserInterfaceContract.EventListener listener;
 
     // If this application has multiple different UI screens
@@ -63,7 +77,6 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
     private static final String SUDOKU = "Sudoku";
 
     //Constructor
-
     public UserInterfaceImpl(Stage stage) {
         this.stage = stage;
         this.root = new Group();
@@ -97,32 +110,28 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
             } else {
                 thickness = 2;
             }
-
             Rectangle verticalLine = getLine(
                     xAndY + 64 * index,
                     BOARD_PADDING,
                     BOARD_X_AND_Y,
-                    thickness );
-
-
+                    thickness
+            );
             Rectangle horizontalLine = getLine(
                     BOARD_PADDING,
                     xAndY + 64 * index,
                     thickness,
                     BOARD_X_AND_Y
             );
-
             //how we actually ass the ui elements to the group
             //he saddle function means se can slap any function in
             //the super class of the ui elemts is a node
             //so we can add a ny valid class that is a node
             root.getChildren().addAll(verticalLine, horizontalLine);
-
             ++index;
-
         }
-
     }
+
+
     private Rectangle getLine ( double x, double y,
                                 double height, double width) {
         Rectangle line = new Rectangle();
@@ -134,14 +143,13 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
         return line;
     }
 
+
     private  void drawTextFields(Group root) {
         final int xOrigin = 50;
         final int yOrigin = 50;
-
         final int xAndYDelta = 64;
 
         //O(n^2) Runtime Complexity
-
         //iterate through each of the 81 'cells' on the board
         for (int xIndex = 0; xIndex < 9; xIndex++) {
             for (int yIndex = 0; yIndex < 9; ++yIndex) {
@@ -149,15 +157,13 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
                 //get location (x,y of top left corner) of each cell
                 int x = xOrigin + xIndex * xAndYDelta;
                 int y = yOrigin + yIndex * xAndYDelta;
+
                 //create text field for each 'cell'
                 SudokuTextField tile = new SudokuTextField(xIndex, yIndex);
                 styleSudokuTile(tile, x, y);
-
                 //this implements EventHandler
                 tile.setOnKeyPressed(this);
-
                 textFieldCoordinates.put(new Coordinates(xIndex, yIndex), tile);
-
                 root.getChildren().add(tile);
             }
         }
@@ -166,26 +172,21 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
 
     private void styleSudokuTile(SudokuTextField tile, double x, double y) {
         Font numberFont = new Font(32);
-
         tile.setFont(numberFont);
         tile.setAlignment(Pos.CENTER);
-
         tile.setLayoutX(x);
         tile.setLayoutY(y);
         tile.setPrefHeight(64);
         tile.setPrefWidth(64);
-
         tile.setBackground(Background.EMPTY);
     }
 
-    private  void drawSudokuBoard(Group root) {
+    private void drawSudokuBoard(Group root) {
         Rectangle boardBackground = new Rectangle();
         boardBackground.setX(BOARD_PADDING);
         boardBackground.setY(BOARD_PADDING);
-
         boardBackground.setWidth(BOARD_X_AND_Y);
         boardBackground.setHeight(BOARD_X_AND_Y);
-
         boardBackground.setFill(BOARD_BACKGROUND_COLOR);
 
         root.getChildren().addAll(boardBackground);
@@ -193,46 +194,102 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
 
     private void  drawTitle(Group root) {
         Text title = new Text(235, 690, SUDOKU);
-        title.setFill(Color.WHITE);
+        title.setFill(Color.WHITE);  //sets font color
         Font titleFont = new Font(43);
         title.setFont(titleFont);
-        root.getChildren().add(title);
-
+        root.getChildren().add(title);  //add this particular UI element
     }
 
     private void  drawBackground(Group root) {
+        //Scene is something kinda like ViewGroup
+        //'the background of the background'
+        Scene scene = new Scene(root, WINDOW_X, WINDOW_Y);
+        scene.setFill(WINDOW_BACKGROUND_COLOR);
+        stage.setScene(scene);
     }
 
-    //we will have our BuildLogic, which will assign our control
-    //logic class to this particuluar view, obviously through the interface.
+    // We will have our BuildLogic, which will assign our control
+    // logic class to this particular view, obviously through the interface.
     @Override
     public void setListener(IUserInterfaceContract.EventListener listener) {
         this.listener = listener;
     }
 
+    // This is what will eventually be called when I just want to update a
+    // single square after the user has input a number, rather than having to
+    // update the whole board, which we do sometimes were just trying to update
+    // a single UI element appropriately.
     @Override
     public void updateSquare(int x, int y, int input) {
-
+        SudokuTextField tile = textFieldCoordinates.get(new Coordinates(x,y));
+        String value = Integer.toString( input );
+        if (value.equals("0")) {
+            value = "";
+        }
+        tile.textProperty().setValue(value);
     }
+
 
     @Override
     public void updateBoard(SudokuGame game) {
+        for (int xIndex = 0; xIndex < 9; xIndex++) {
+            for (int yIndex = 0; yIndex < 9; yIndex++) {
+                TextField tile = textFieldCoordinates.get( new Coordinates(xIndex, yIndex));
+                String value = Integer.toString( game.getCopyOfGridState()[xIndex][yIndex]);
+                if (value.equals("0")) value = "";
+                tile.setText( value );
+                if (game.getGameState() == GameState.NEW) {
+                    if (value.equals("")) {
+                        tile.setStyle("-fx-opacity: 1;");
+                        tile.setDisable(false);
+                    } else {
+                        tile.setStyle("-fx-opacity: 0.8;");
+                        tile.setDisable(true);
+                    }
+                }
+
+            }
+        }
 
     }
 
+
     @Override
     public void showDialog(String message) {
+        Alert dialog = new Alert (Alert.AlertType.CONFIRMATION, message, ButtonType.OK);
+        dialog.showAndWait();
 
+        if (dialog.getResult() == ButtonType.OK) listener.onDialogClick();
     }
 
     @Override
     public void showError(String message) {
-
+        Alert dialog = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        dialog.showAndWait();
     }
 
     @Override
     public void handle(KeyEvent event) {
-
+        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+            if (
+                    event.getText().matches("[0-9]")
+            ) {
+                int value = Integer.parseInt(event.getText());
+                handleInput(value, event.getSource());
+            } else if (event.getCode() == KeyCode.BACK_SPACE) {
+                handleInput(0,event.getSource());
+            } else {
+                ((TextField) event.getSource()).setText("");
+            }
+        }
+        event.consume();
     }
 
+    private void handleInput(int value, Object source) {
+        listener.onSudokuInput(
+                ((SudokuTextField) source).getX(),
+                ((SudokuTextField) source).getY(),
+                value
+        );
+    }
 }
