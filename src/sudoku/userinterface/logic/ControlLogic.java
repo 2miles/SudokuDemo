@@ -26,9 +26,12 @@ import java.io.IOException;
 public class ControlLogic implements IUserInterfaceContract.EventListener {
 
     private IStorage storage;
-
     private IUserInterfaceContract.View view;
 
+    public ControlLogic (IStorage storage, IUserInterfaceContract.View view) {
+        this.storage = storage;
+        this.view = view;
+    }
 
     @Override
     public void onSudokuInput(int x, int y, int input) {
@@ -53,6 +56,11 @@ public class ControlLogic implements IUserInterfaceContract.EventListener {
         }
     }
 
+    // If the user clicks the OK dialogs this is where weel hadle that
+    // and this will generate a new game for the user.
+
+    // Were going to immediately update ethe storage first before we update
+    // the user interface because the storage is the source of truth.
     @Override
     public void onDialogClick() {
         try {

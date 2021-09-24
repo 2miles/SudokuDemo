@@ -200,6 +200,7 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
         root.getChildren().add(title);  //add this particular UI element
     }
 
+    //the turquoise background
     private void  drawBackground(Group root) {
         //Scene is something kinda like ViewGroup
         //'the background of the background'
@@ -230,13 +231,23 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
     }
 
 
+    //this will occur when the user finishes a game, or starts a new game
     @Override
     public void updateBoard(SudokuGame game) {
+
         for (int xIndex = 0; xIndex < 9; xIndex++) {
             for (int yIndex = 0; yIndex < 9; yIndex++) {
+
+                //For each TextField were gonna grab it from the hashMap
+                // I can grab them by creating a new coordinates object with a particular x,y value
+                // The nice thing about the hash function is that i can recreate it anytime i want
+                // As long as the calues are the same, or create the same hash values.
                 TextField tile = textFieldCoordinates.get( new Coordinates(xIndex, yIndex));
+
                 String value = Integer.toString( game.getCopyOfGridState()[xIndex][yIndex]);
-                if (value.equals("0")) value = "";
+                if (value.equals("0")) {
+                    value = "";
+                }
                 tile.setText( value );
                 if (game.getGameState() == GameState.NEW) {
                     if (value.equals("")) {
@@ -253,38 +264,56 @@ public class UserInterfaceImpl implements IUserInterfaceContract.View,
 
     }
 
-
+    // called when the logic center of the game indicates that it is completed properly
+    // and then weel show tis alert dialoguew, which basdicly will ask the user if they
+    // want to star5t a new game.
     @Override
     public void showDialog(String message) {
         Alert dialog = new Alert (Alert.AlertType.CONFIRMATION, message, ButtonType.OK);
+        // pause things and wait for interaction from the user
         dialog.showAndWait();
 
+        // once that occurs then we can do
+        // the dialooge was cvli kces and the user awants to star ta new game
         if (dialog.getResult() == ButtonType.OK) listener.onDialogClick();
+
     }
 
+    // if an error ocuurs duringread or write of information storage
     @Override
     public void showError(String message) {
         Alert dialog = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         dialog.showAndWait();
     }
 
+    // if the user enters nu mber into a text box
+    // that event will end up here
     @Override
     public void handle(KeyEvent event) {
         if (event.getEventType() == KeyEvent.KEY_PRESSED) {
             if (
                     event.getText().matches("[0-9]")
             ) {
+                // value is whatever the user entered
                 int value = Integer.parseInt(event.getText());
+                // source will the be the ui elemebt  the object that was
+                // actual actually clicked on
+                // I will get passes to handleInpu as an object
                 handleInput(value, event.getSource());
+                //so if a user wants to clear a tile by hitting 0 or backspace
             } else if (event.getCode() == KeyCode.BACK_SPACE) {
                 handleInput(0,event.getSource());
             } else {
                 ((TextField) event.getSource()).setText("");
             }
         }
+        // wont let the internal conde porpage throughout he application?
         event.consume();
     }
 
+    // once that input occurs, then were gonna pass that input to the control
+    // logic class, which is the listerner here, and were gonna say
+    // "hey, at this x,y value, this value is called"
     private void handleInput(int value, Object source) {
         listener.onSudokuInput(
                 ((SudokuTextField) source).getX(),
