@@ -40,8 +40,13 @@ public class SudokuSolver {
         int iterator = 0;
         for (int y = 0; y < GRID_BOUNDARY; y++) {
             for (int x = 0; x < GRID_BOUNDARY; x++) {
-                if(puzzle[x][y] == )
+                if(puzzle[x][y] == 0) {
+                    emptyCells[iterator] = new Coordinates(x, y);
+                    if (iterator == 39) return emptyCells;
+                    iterator++;
+                }
             }
         }
+        return emptyCells;
     }
 }
